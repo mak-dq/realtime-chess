@@ -14,53 +14,115 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
-function checkEmail(email) {
-  var validRegex =
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+export default function Register() {
+  const [details, setDetails] = useState({
+    firstName: '',
+    lastName: '',
+    username: '',
+    age: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
 
-  if (email.match(validRegex)) return true;
-  else return false;
-}
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
+  const [usernameError, setUsernameError] = useState('');
+  const [ageError, setAgeError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
-export default function SignUp() {
-    const [details, setDetails] = useState();
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // console.log({
-    //   name: `${data.get('firstName')} ${data.get('lastName')}`,
-    //   username: data.get('username'),
-    //   age: data.get('age'),
-    //   email: data.get('email'),
-    //   password: data.get('password'),
-    // });
-    // setDetails({
-    //   firstName: data.get('firstName'),
-    //   lastName: data.get('lastName'),
-    //   username: data.get('username'),
-    //   age: data.get('age'),
-    //   email: data.get('email'),
-    //   password: data.get('password'),
-    // });
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    const confirmPassword = data.get('password');
-
-    if (data.get('password') !== confirmPassword) {
-      alert("Passwords doesn't match");
-      document.getElementById('password').focus();
+    if (details.firstName === '') {
+      setFirstNameError('First name is required');
+      document.getElementById('firstName').focus();
+      return;
+    } else {
+      setFirstNameError('');
     }
 
+    if (details.lastName === '') {
+      setLastNameError('Last name is required');
+      document.getElementById('lastName').focus();
+      return;
+    } else {
+      setLastNameError('');
+    }
 
+    if (details.username === '') {
+      setUsernameError('Username is required');
+      document.getElementById('username').focus();
+      return;
+    } else {
+      setUsernameError('');
+    }
 
-    // if (!checkEmail(data.get('email')) {
-    //     alert("Please enter a valid email");
-    // }
+    if (
+      parseInt(details.age) < 9 ||
+      parseInt(details.age) > 99 ||
+      details.age === ''
+    ) {
+      setAgeError('Not a legal age to play');
+      document.getElementById('age').focus();
+    } else {
+      setAgeError('');
+    }
+
+    if (!checkEmail(details.email)) {
+      setEmailError('Please enter a valid email');
+      if (document.activeElement !== document.getElementById('age')) {
+        document.getElementById('email').focus();
+      }
+    } else {
+      setEmailError('');
+    }
+
+    if (details.password !== details.confirmPassword) {
+      setPasswordError("Passwords doesn't match");
+      setConfirmPasswordError("Passwords doesn't match");
+      if (
+        document.activeElement !== document.getElementById('email') &&
+        document.activeElement !== document.getElementById('age')
+      ) {
+        document.getElementById('password').focus();
+      }
+      return;
+    } else if (details.password === '') {
+      setPasswordError("Password can't be empty");
+      setConfirmPasswordError("Confirm Password can't be empty");
+      if (
+        document.activeElement !== document.getElementById('email') &&
+        document.activeElement !== document.getElementById('age')
+      ) {
+        document.getElementById('password').focus();
+      }
+      return;
+    } else {
+      setPasswordError('');   
+      setConfirmPasswordError('');   
+    }
+    console.log(details);
   };
 
-  const handleInputChange = (e) => {
-    console.log(e);
-    
+  function checkEmail(email) {
+    var validRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+    if (email.match(validRegex)) return true;
+    else return false;
   }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // console.log('name, value :>> ', name, value);
+    setDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -70,8 +132,8 @@ export default function SignUp() {
         maxWidth="xs"
         sx={{
           margin: 'autu 0',
-          marginTop: '50px',
-          height: '75vh',
+          marginTop: '20px',
+          height: '660px',
           borderRadius: '10px',
           backgroundColor: theme.palette.grey[300],
         }}
@@ -93,7 +155,7 @@ export default function SignUp() {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={(e) => handleSubmit(e)}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
@@ -105,7 +167,9 @@ export default function SignUp() {
                   fullWidth
                   id="firstName"
                   label="First Name"
-                  onChange={(e)=>handleInputChange(e)}          
+                  error={firstNameError !== ''}
+                  helperText={firstNameError !== '' ? firstNameError : ''}
+                  onChange={(e) => handleChange(e)}
                   autoFocus
                 />
               </Grid>
@@ -115,6 +179,9 @@ export default function SignUp() {
                   fullWidth
                   id="lastName"
                   label="Last Name"
+                  error={lastNameError !== ''}
+                  helperText={lastNameError !== '' ? lastNameError : ''}
+                  onChange={(e) => handleChange(e)}
                   name="lastName"
                   autoComplete="family-name"
                 />
@@ -125,6 +192,9 @@ export default function SignUp() {
                   name="username"
                   required
                   fullWidth
+                  error={usernameError !== ''}
+                  helperText={usernameError !== '' ? usernameError : ''}
+                  onChange={(e) => handleChange(e)}
                   id="username"
                   label="Username"
                 />
@@ -135,6 +205,11 @@ export default function SignUp() {
                   fullWidth
                   id="age"
                   label="Age"
+                  type="number"
+                  // inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                  error={ageError !== ''}
+                  helperText={ageError !== '' ? ageError : ''}
+                  onChange={(e) => handleChange(e)}
                   name="age"
                   autoComplete="age"
                 />
@@ -144,7 +219,11 @@ export default function SignUp() {
                   required
                   fullWidth
                   id="email"
+                  type="email"
                   label="Email Address"
+                  error={emailError !== ''}
+                  helperText={emailError !== '' ? emailError : ''}
+                  onChange={(e) => handleChange(e)}
                   name="email"
                   autoComplete="email"
                 />
@@ -155,6 +234,9 @@ export default function SignUp() {
                   fullWidth
                   name="password"
                   label="Password"
+                  error={passwordError !== ''}
+                  helperText={passwordError !== '' ? passwordError : ''}
+                  onChange={(e) => handleChange(e)}
                   type="password"
                   id="password"
                   autoComplete="new-password"
@@ -164,14 +246,22 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  name="confirm-password"
+                  name="confirmPassword"
                   label="Confirm Password"
                   type="password"
-                  id="confirm-password"
+                  id="confirmPassword"
+                  error={confirmPasswordError !== ''}
+                  helperText={confirmPasswordError !== '' ? confirmPasswordError : ''}
+                  onChange={(e) => handleChange(e)}
                   autoComplete="new-password"
                 />
               </Grid>
             </Grid>
+            {/* <Grid>
+              <p style={{ fontSize: '14px', color: 'red', textAlign: 'right' }}>
+                {error !== '' && error}
+              </p>
+            </Grid> */}
             <Button
               type="submit"
               fullWidth
