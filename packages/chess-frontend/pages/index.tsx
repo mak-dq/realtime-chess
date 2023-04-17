@@ -1,13 +1,11 @@
 // import styles from './index.module.css';
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
-import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import Image from 'next/image';
 
 export function Index() {
   return (
-    <Container sx={{ margin: '0', padding: '0 !important', height: '100vh' }}>
-      <Navbar />
+    <Container sx={{ margin: '0', padding: '0 !important', height: '90vh' }}>
       <Stack direction="row">
         <Sidebar />
         <Container
@@ -15,11 +13,11 @@ export function Index() {
             position: 'absolute',
             left: '15vw',
             height: '92vh',
-            width: '85vw',
+            width:"85vw",
           }}
         >
           <Stack
-            sx={{ margin: '50px 30px' }}
+            sx={{ margin: '50px 30px'}}
             direction="row"
             className="d-flex"
           >

@@ -3,7 +3,7 @@ import { Stack, Typography } from '@mui/material';
 export default function Footer() {
   return (
     <>
-      <Stack  className='d-flex' sx={{ height:"40px",width:"100vw", backgroundColor:"black",position:"absolute", bottom:"0"}}>
+      <Stack  className='d-flex' sx={{ height:"40px",width:"100%", backgroundColor:"black",position:"absolute", bottom:"0%"}}>
         <Typography variant='subtitle1' color="white">Made with ❤️ at DQ-Labs</Typography>
       </Stack>
     </>

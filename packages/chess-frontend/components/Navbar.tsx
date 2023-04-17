@@ -1,5 +1,6 @@
 import { Stack } from '@mui/material';
 import LoginSignup from './LoginSignup';
+import Link from 'next/link';
 
 const Navbar = () => {
   return (
@@ -9,7 +10,7 @@ const Navbar = () => {
         height: '60px',
         // backgroundColor: '#2a6014',
         backgroundImage: "linear-gradient( 109.6deg,  rgba(61,131,97,1) 11.2%, rgba(28,103,88,1) 91.1% );",
-        width: '100vw !important',
+        // width: '100vw !important',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -17,7 +18,9 @@ const Navbar = () => {
       }}
       direction="row"
     >
-      <h1 style={{ fontSize: '26px', color: 'white' }}>Realtime Chess</h1>
+      <Link href="/">
+        <h1 style={{ fontSize: '26px', color: 'white' }}>Realtime Chess</h1>
+      </Link>
       <LoginSignup direction={'row'} />
     </Stack>
   );

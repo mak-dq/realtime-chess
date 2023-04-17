@@ -1,12 +1,14 @@
 // pages/500.tsx
 
 import Footer from './Footer';
+import Navbar from './Navbar';
 
-export default function Layout({children}) {
+export default function Layout({ children }) {
   return (
     <>
-      {children}
-      <Footer />
+          <Navbar />
+          {children}
+          <Footer />
     </>
   );
 }
