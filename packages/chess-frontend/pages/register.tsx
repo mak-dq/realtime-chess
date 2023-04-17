@@ -12,55 +12,52 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
 const theme = createTheme();
 
-function checkEmail(email) {
-  var validRegex =
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+export default function Register() {
+  const schema = yup.object().shape({
+    firstName: yup.string().required(),
+    lastName: yup.string().required(),
+    email: yup.string().email().required(),
+    age: yup.number().positive().integer().required(),
+    password: yup.string().min(4).max(15).required(),
+    confirmPassword: yup.string().oneOf([yup.ref('password'), null]),
+  });
 
-  if (email.match(validRegex)) return true;
-  else return false;
-}
+  const [details, setDetails] = useState({
+    firstName: '',
+    lastName: '',
+    username: '',
+    age: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
 
-export default function SignUp() {
-    const [details, setDetails] = useState();
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // console.log({
-    //   name: `${data.get('firstName')} ${data.get('lastName')}`,
-    //   username: data.get('username'),
-    //   age: data.get('age'),
-    //   email: data.get('email'),
-    //   password: data.get('password'),
-    // });
-    // setDetails({
-    //   firstName: data.get('firstName'),
-    //   lastName: data.get('lastName'),
-    //   username: data.get('username'),
-    //   age: data.get('age'),
-    //   email: data.get('email'),
-    //   password: data.get('password'),
-    // });
-
-    const confirmPassword = data.get('password');
-
-    if (data.get('password') !== confirmPassword) {
-      alert("Passwords doesn't match");
-      document.getElementById('password').focus();
-    }
-
-
-
-    // if (!checkEmail(data.get('email')) {
-    //     alert("Please enter a valid email");
-    // }
+  const submitForm = () => {
+    console.log(details);
   };
 
-  const handleInputChange = (e) => {
-    console.log(e);
-    
-  }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // console.log('name, value :>> ', name, value);
+    setDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -93,30 +90,34 @@ export default function SignUp() {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(submitForm)}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
+                <input
                   autoComplete="given-name"
                   name="firstName"
                   required
-                  fullWidth
+                  // fullWidth
                   id="firstName"
-                  label="First Name"
-                  onChange={(e)=>handleInputChange(e)}          
+                  // label="First Name"
+                  onChange={(e) => handleChange(e)}
                   autoFocus
+                  {...register('firstName', { required: true })}
                 />
               </Grid>
+              <p>{errors.firstName?.message}</p>
               <Grid item xs={12} sm={6}>
                 <TextField
                   required
                   fullWidth
                   id="lastName"
                   label="Last Name"
+                  onChange={(e) => handleChange(e)}
                   name="lastName"
                   autoComplete="family-name"
+                  ref={register}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -125,8 +126,10 @@ export default function SignUp() {
                   name="username"
                   required
                   fullWidth
+                  onChange={(e) => handleChange(e)}
                   id="username"
                   label="Username"
+                  ref={register}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -135,8 +138,10 @@ export default function SignUp() {
                   fullWidth
                   id="age"
                   label="Age"
+                  onChange={(e) => handleChange(e)}
                   name="age"
                   autoComplete="age"
+                  ref={register}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -145,8 +150,10 @@ export default function SignUp() {
                   fullWidth
                   id="email"
                   label="Email Address"
+                  onChange={(e) => handleChange(e)}
                   name="email"
                   autoComplete="email"
+                  ref={register}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -155,23 +162,28 @@ export default function SignUp() {
                   fullWidth
                   name="password"
                   label="Password"
+                  onChange={(e) => handleChange(e)}
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  ref={register}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
-                  name="confirm-password"
+                  name="confirmPassword"
                   label="Confirm Password"
                   type="password"
-                  id="confirm-password"
+                  id="confirmPassword"
+                  onChange={(e) => handleChange(e)}
                   autoComplete="new-password"
+                  ref={register}
                 />
               </Grid>
             </Grid>
+
             <Button
               type="submit"
               fullWidth
@@ -193,3 +205,42 @@ export default function SignUp() {
     </ThemeProvider>
   );
 }
+
+// const handlfeSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+//   event.preventDefault();
+//   const data = new FormData(event.currentTarget);
+//   // console.log({
+//   //   name: `${data.get('firstName')} ${data.get('lastName')}`,
+//   //   username: data.get('username'),
+//   //   age: data.get('age'),
+//   //   email: data.get('email'),
+//   //   password: data.get('password'),
+//   // });
+//   // setDetails({
+//   //   firstName: data.get('firstName'),
+//   //   lastName: data.get('lastName'),
+//   //   username: data.get('username'),
+//   //   age: data.get('age'),
+//   //   email: data.get('email'),
+//   //   password: data.get('password'),
+//   // });
+
+//   const confirmPassword = data.get('password');
+
+//   if (data.get('password') !== confirmPassword) {
+//     alert("Passwords doesn't match");
+//     document.getElementById('password').focus();
+//   }
+
+//   // if (!checkEmail(data.get('email')) {
+//   //     alert("Please enter a valid email");
+//   // }
+// };
+
+// function checkEmail(email) {
+//   var validRegex =
+//     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+//   if (email.match(validRegex)) return true;
+//   else return false;
+// }
