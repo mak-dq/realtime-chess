@@ -14,6 +14,16 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
+interface details {
+  firstName: string;
+  lastName: string;
+  username: string;
+  age: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export default function Register() {
   const [details, setDetails] = useState({
     firstName: '',
@@ -33,13 +43,19 @@ export default function Register() {
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  function checkEmail(email: string) {
+    var validRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
+    if (email.match(validRegex)) return true;
+    else return false;
+  }
+
+  function checkNames(details: details) {
     if (details.firstName === '') {
       setFirstNameError('First name is required');
       document.getElementById('firstName').focus();
-      return;
+      return false;
     } else {
       setFirstNameError('');
     }
@@ -47,7 +63,7 @@ export default function Register() {
     if (details.lastName === '') {
       setLastNameError('Last name is required');
       document.getElementById('lastName').focus();
-      return;
+      return false;
     } else {
       setLastNameError('');
     }
@@ -55,31 +71,25 @@ export default function Register() {
     if (details.username === '') {
       setUsernameError('Username is required');
       document.getElementById('username').focus();
-      return;
+      return false;
     } else {
       setUsernameError('');
+      return true;
     }
+  }
 
-    if (
-      parseInt(details.age) < 9 ||
-      parseInt(details.age) > 99 ||
-      details.age === ''
-    ) {
+  function checkAge(age: string) {
+    if (parseInt(age) < 9 || parseInt(age) > 99 || age === '') {
       setAgeError('Not a legal age to play');
       document.getElementById('age').focus();
+      return false;
     } else {
       setAgeError('');
+      return true;
     }
+  }
 
-    if (!checkEmail(details.email)) {
-      setEmailError('Please enter a valid email');
-      if (document.activeElement !== document.getElementById('age')) {
-        document.getElementById('email').focus();
-      }
-    } else {
-      setEmailError('');
-    }
-
+  function checkPassword(details: details) {
     if (details.password !== details.confirmPassword) {
       setPasswordError("Passwords doesn't match");
       setConfirmPasswordError("Passwords doesn't match");
@@ -89,7 +99,7 @@ export default function Register() {
       ) {
         document.getElementById('password').focus();
       }
-      return;
+      return false;
     } else if (details.password === '') {
       setPasswordError("Password can't be empty");
       setConfirmPasswordError("Confirm Password can't be empty");
@@ -99,21 +109,44 @@ export default function Register() {
       ) {
         document.getElementById('password').focus();
       }
+      return false;
+    } else {
+      setPasswordError('');
+      setConfirmPasswordError('');
+      return true;
+    }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!checkNames(details)) return;
+
+    if (!checkAge(details.age)) return;
+
+    if (!checkEmail(details.email)) {
+      setEmailError('Please enter a valid email');
+      if (document.activeElement !== document.getElementById('age')) {
+        document.getElementById('email').focus();
+      }
       return;
     } else {
-      setPasswordError('');   
-      setConfirmPasswordError('');   
+      setEmailError('');
     }
+
+    if (!checkPassword(details)) return;
+
     console.log(details);
+    setDetails({
+      firstName: '',
+      lastName: '',
+      username: '',
+      age: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    });
   };
-
-  function checkEmail(email) {
-    var validRegex =
-      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
-    if (email.match(validRegex)) return true;
-    else return false;
-  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -164,6 +197,7 @@ export default function Register() {
                   autoComplete="given-name"
                   name="firstName"
                   required
+                  value={details.firstName}
                   fullWidth
                   id="firstName"
                   label="First Name"
@@ -178,6 +212,7 @@ export default function Register() {
                   required
                   fullWidth
                   id="lastName"
+                  value={details.lastName}
                   label="Last Name"
                   error={lastNameError !== ''}
                   helperText={lastNameError !== '' ? lastNameError : ''}
@@ -191,6 +226,7 @@ export default function Register() {
                   autoComplete="user-name"
                   name="username"
                   required
+                  value={details.username}
                   fullWidth
                   error={usernameError !== ''}
                   helperText={usernameError !== '' ? usernameError : ''}
@@ -205,8 +241,8 @@ export default function Register() {
                   fullWidth
                   id="age"
                   label="Age"
+                  value={details.age}
                   type="number"
-                  // inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                   error={ageError !== ''}
                   helperText={ageError !== '' ? ageError : ''}
                   onChange={(e) => handleChange(e)}
@@ -219,6 +255,7 @@ export default function Register() {
                   required
                   fullWidth
                   id="email"
+                  value={details.email}
                   type="email"
                   label="Email Address"
                   error={emailError !== ''}
@@ -233,6 +270,7 @@ export default function Register() {
                   required
                   fullWidth
                   name="password"
+                  value={details.password}
                   label="Password"
                   error={passwordError !== ''}
                   helperText={passwordError !== '' ? passwordError : ''}
@@ -249,19 +287,17 @@ export default function Register() {
                   name="confirmPassword"
                   label="Confirm Password"
                   type="password"
+                  value={details.confirmPassword}
                   id="confirmPassword"
                   error={confirmPasswordError !== ''}
-                  helperText={confirmPasswordError !== '' ? confirmPasswordError : ''}
+                  helperText={
+                    confirmPasswordError !== '' ? confirmPasswordError : ''
+                  }
                   onChange={(e) => handleChange(e)}
                   autoComplete="new-password"
                 />
               </Grid>
             </Grid>
-            {/* <Grid>
-              <p style={{ fontSize: '14px', color: 'red', textAlign: 'right' }}>
-                {error !== '' && error}
-              </p>
-            </Grid> */}
             <Button
               type="submit"
               fullWidth
