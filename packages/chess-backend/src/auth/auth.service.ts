@@ -53,8 +53,8 @@ export class AuthService {
     playerDetail.token = accessToken;
     this.playerDetailRepository.save(playerDetail);
     return {
+      id: playerDetail.id,
       access_token:accessToken,
-
     }
   }
   //Check Password

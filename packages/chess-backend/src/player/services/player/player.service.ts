@@ -21,8 +21,8 @@ export class PlayerService {
   //Register Player
   async createPlayer(player: CreatePlayerDto): Promise<Observable<PlayerDetailEntity>> {
     try {
-      const playerDetailToUpdate = await this.playerDetailRepository.findOneBy({
-        email: player.email,
+      const playerDetailToUpdate = await this.playerDetailRepository.findOne({select:{password:false},
+        where:{email:player.email}
       });
       if (playerDetailToUpdate) throw new Error('Player already present');
     } catch (error) {
@@ -39,12 +39,14 @@ export class PlayerService {
 
   //Get All Players
   async getPlayer(): Promise<Observable<PlayerDetailDto[]>> {
-    return await from(this.playerDetailRepository.find());
+    return from(this.playerDetailRepository.find({select:{password:false}}));
   }
 
   //Get Player By Id
   async getPlayerById(id: number): Promise<Observable<PlayerDetailDto>> {
-    return await from(this.playerDetailRepository.findOneBy({ id: id }));
+    return from(this.playerDetailRepository.findOne({select:{password:false},
+      where:{id:id}
+    }));
   }
 
   //Delete Player By Id
@@ -69,14 +71,14 @@ export class PlayerService {
       });
     }
 
-    if (playerDetailDto.fname !== null)
-      playerDetailToUpdate.fname = playerDetailDto.fname;
-    if (playerDetailDto.lname !== null)
-      playerDetailToUpdate.lname = playerDetailDto.lname;
-    if (playerDetailDto.age !== null)
-      playerDetailToUpdate.age = playerDetailDto.age;
-    if (playerDetailDto.username !== null)
-      playerDetailToUpdate.username = playerDetailDto.username;
+    // if (playerDetailDto.fname !== null)
+    //   playerDetailToUpdate.fname = playerDetailDto.fname;
+    // if (playerDetailDto.lname !== null)
+    //   playerDetailToUpdate.lname = playerDetailDto.lname;
+    // if (playerDetailDto.age !== null)
+    //   playerDetailToUpdate.age = playerDetailDto.age;
+    // if (playerDetailDto.username !== null)
+    //   playerDetailToUpdate.username = playerDetailDto.username;
     return this.playerDetailRepository.save(playerDetailToUpdate);
   }
 
