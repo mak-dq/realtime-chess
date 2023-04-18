@@ -13,5 +13,5 @@
   "compilerOptions": {
     "esModuleInterop": true
   },
-  "javascript.implicitProjectConfig.experimentalDecorators": true
+  
 }

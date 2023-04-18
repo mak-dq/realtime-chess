@@ -53,6 +53,9 @@ function bootstrap() {
                     app = _a.sent();
                     globalPrefix = 'api';
                     app.setGlobalPrefix(globalPrefix);
+                    app.useGlobalPipes(new common_1.ValidationPipe({
+                        disableErrorMessages: true
+                    }));
                     port = process.env.PORT || 3000;
                     return [4 /*yield*/, app.listen(port)];
                 case 2:
