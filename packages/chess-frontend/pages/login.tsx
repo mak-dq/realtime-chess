@@ -12,6 +12,9 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+import { login } from '../api/login';
+import { register } from '../api/register';
+
 const theme = createTheme();
 
 interface details {
@@ -58,7 +61,7 @@ export default function Register() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let type: string;
     if (!checkUsernameOrEmail(details.usernameOrEmail)) return;
@@ -67,7 +70,20 @@ export default function Register() {
 
     if (!checkPassword(details)) return;
 
-    console.log(details, type);
+    // console.log(details, type);
+    let data;
+    if (type === 'email') {
+      data = {
+        email: details.usernameOrEmail,
+        password: details.password,
+      };
+    } else {
+      data = {
+        username: details.usernameOrEmail,
+        password: details.password,
+      };
+    }
+    console.log(login(data));
 
     setDetails({
       usernameOrEmail: '',
@@ -75,7 +91,9 @@ export default function Register() {
     });
   };
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     // console.log('name, value :>> ', name, value);
     setDetails((prevDetails) => ({

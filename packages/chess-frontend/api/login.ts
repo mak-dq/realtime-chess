@@ -1,21 +1,22 @@
 import { API_URL } from './config';
 import axios from 'axios';
 
-interface userData {
-  fname: string;
-  lname: string;
-  username: string;
-  age: number;
+interface loginEmailData {
   email: string;
   password: string;
 }
 
-export const register = async (userData: userData) => {
+interface loginUsernameData {
+  username: string;
+  password: string;
+}
+
+export const login = async (loginData: loginEmailData | loginUsernameData) => {
   const headers = {
     'Content-Type': 'application/json',
   };
   try {
-    const response = await axios.post(`${API_URL}player/`, userData, {
+    const response = await axios.post(`${API_URL}auth/login/`, loginData, {
       headers,
     });
     return response.data;
