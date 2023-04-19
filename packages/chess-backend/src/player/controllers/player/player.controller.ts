@@ -14,18 +14,21 @@ import { PlayerDetail } from '../../models/player.interface';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { PlayerDetailDto } from '../../dtos/playerDetail.dto';
 import { CreatePlayerDto } from '../../dtos/createPlayer.dto';
+import { Public } from '../../../app/public.decorator';
 
 @Controller('player')
 export class PlayerController {
   constructor(private playerService: PlayerService) {}
 
+  @Public()
   @Post()
   async createPlayer(
     @Body() createPlayerDto: CreatePlayerDto
-  ): Promise<Observable<PlayerDetailEntity>> {
+  ): Promise<PlayerDetailDto> {
     return await this.playerService.createPlayer(createPlayerDto);
   }
 
+  @Public()
   @Get()
   async getPlayer(): Promise<Observable<PlayerDetailDto[]>> {
     return await this.playerService.getPlayer();

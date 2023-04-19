@@ -6,21 +6,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 exports.__esModule = true;
-exports.PlayerDetailDto = void 0;
+exports.CreatePlayerDto = void 0;
 var class_validator_1 = require("class-validator");
-var PlayerDetailDto = /** @class */ (function () {
-    function PlayerDetailDto() {
+var CreatePlayerDto = /** @class */ (function () {
+    function CreatePlayerDto() {
     }
-    __decorate([
-        (0, class_validator_1.IsNotEmpty)()
-    ], PlayerDetailDto.prototype, "fname");
-    __decorate([
-        (0, class_validator_1.IsNotEmpty)()
-    ], PlayerDetailDto.prototype, "username");
     __decorate([
         (0, class_validator_1.IsEmail)(),
         (0, class_validator_1.IsNotEmpty)()
-    ], PlayerDetailDto.prototype, "email");
-    return PlayerDetailDto;
+    ], CreatePlayerDto.prototype, "email");
+    __decorate([
+        (0, class_validator_1.IsNotEmpty)()
+    ], CreatePlayerDto.prototype, "password");
+    return CreatePlayerDto;
 }());
-exports.PlayerDetailDto = PlayerDetailDto;
+exports.CreatePlayerDto = CreatePlayerDto;

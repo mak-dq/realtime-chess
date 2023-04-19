@@ -19,22 +19,32 @@ export class PlayerService {
   ) {}
 
   //Register Player
-  async createPlayer(player: CreatePlayerDto): Promise<Observable<PlayerDetailEntity>> {
+  async createPlayer(player: CreatePlayerDto): Promise<PlayerDetailDto>{
     try {
-      const playerDetailToUpdate = await this.playerDetailRepository.findOneBy({
-        email: player.email,
+
+      const playerDetailToUpdate = await this.playerDetailRepository.findOne({
+        where:{email:player.email.toLowerCase() , username:player.username.toLowerCase()},
       });
       if (playerDetailToUpdate) throw new Error('Player already present');
     } catch (error) {
       throw new ConflictException('Already Present', {
         cause: error,
-        description: 'Player is already registered with this email',
+        description: 'Player is already registered',
       });
     }
     const salt = await bcrypt.genSalt(15);
     const hashPassword = await bcrypt.hash(player.password, salt);
     player.password = hashPassword;
-    return from(this.playerDetailRepository.save(player));
+    const newPlayer=(this.playerDetailRepository.create(player));
+    await this.playerDetailRepository.save(newPlayer)
+    const playerDetail=new PlayerDetailDto();
+    playerDetail.id= newPlayer.id;
+    playerDetail.fname= newPlayer.fname;
+    playerDetail.lname= newPlayer.lname;
+    playerDetail.age= newPlayer.age;
+    playerDetail.username= newPlayer.username;
+    playerDetail.email= newPlayer.email;
+    return playerDetail;
   }
 
   //Get All Players
@@ -68,15 +78,6 @@ export class PlayerService {
         description: 'Player not found with this email',
       });
     }
-
-    if (playerDetailDto.fname !== null)
-      playerDetailToUpdate.fname = playerDetailDto.fname;
-    if (playerDetailDto.lname !== null)
-      playerDetailToUpdate.lname = playerDetailDto.lname;
-    if (playerDetailDto.age !== null)
-      playerDetailToUpdate.age = playerDetailDto.age;
-    if (playerDetailDto.username !== null)
-      playerDetailToUpdate.username = playerDetailDto.username;
     return this.playerDetailRepository.save(playerDetailToUpdate);
   }
 

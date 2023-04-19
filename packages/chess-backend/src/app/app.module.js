@@ -13,6 +13,7 @@ var app_service_1 = require("./app.service");
 var config_1 = require("@nestjs/config");
 var typeorm_1 = require("@nestjs/typeorm");
 var player_module_1 = require("../player/player.module");
+var auth_module_1 = require("../auth/auth.module");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
@@ -30,7 +31,8 @@ var AppModule = /** @class */ (function () {
                     autoLoadEntities: true,
                     synchronize: true
                 }),
-                player_module_1.PlayerModule
+                player_module_1.PlayerModule,
+                auth_module_1.AuthModule
             ],
             controllers: [app_controller_1.AppController],
             providers: [app_service_1.AppService]

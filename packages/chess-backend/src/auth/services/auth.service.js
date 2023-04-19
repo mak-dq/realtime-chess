@@ -45,119 +45,86 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.PlayerService = void 0;
+exports.AuthService = void 0;
 var common_1 = require("@nestjs/common");
 var typeorm_1 = require("@nestjs/typeorm");
-var player_entity_1 = require("../../models/player.entity");
-var rxjs_1 = require("rxjs");
+var player_entity_1 = require("../../player/models/player.entity");
 var bcrypt = require("bcrypt");
-var PlayerService = /** @class */ (function () {
-    function PlayerService(playerDetailRepository) {
+var AuthService = /** @class */ (function () {
+    function AuthService(playerDetailRepository, jwtService) {
         this.playerDetailRepository = playerDetailRepository;
+        this.jwtService = jwtService;
     }
-    //Register Player
-    PlayerService.prototype.createPlayer = function (player) {
+    AuthService.prototype.loginPlayer = function (playerLoginDto) {
         return __awaiter(this, void 0, void 0, function () {
-            var playerDetailToUpdate, error_1, salt, hashPassword;
+            var playerDetail, error_1, error_2, payload, accessToken;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.playerDetailRepository.findOne({ select: { password: false },
-                                where: { email: player.email }
-                            })];
-                    case 1:
-                        playerDetailToUpdate = _a.sent();
-                        if (playerDetailToUpdate)
-                            throw new Error('Player already present');
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_1 = _a.sent();
-                        throw new common_1.ConflictException('Already Present', {
-                            cause: error_1,
-                            description: 'Player is already registered with this email'
-                        });
-                    case 3: return [4 /*yield*/, bcrypt.genSalt(15)];
-                    case 4:
-                        salt = _a.sent();
-                        return [4 /*yield*/, bcrypt.hash(player.password, salt)];
-                    case 5:
-                        hashPassword = _a.sent();
-                        player.password = hashPassword;
-                        return [2 /*return*/, (0, rxjs_1.from)(this.playerDetailRepository.save(player))];
-                }
-            });
-        });
-    };
-    //Get All Players
-    PlayerService.prototype.getPlayer = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, (0, rxjs_1.from)(this.playerDetailRepository.find({ select: { password: false } }))];
-            });
-        });
-    };
-    //Get Player By Id
-    PlayerService.prototype.getPlayerById = function (id) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, (0, rxjs_1.from)(this.playerDetailRepository.findOne({ select: { password: false },
-                        where: { id: id }
-                    }))];
-            });
-        });
-    };
-    //Delete Player By Id
-    PlayerService.prototype.deletePlayerById = function (id) {
-        return (0, rxjs_1.from)(this.playerDetailRepository["delete"](id));
-    };
-    //Update Player By Email
-    PlayerService.prototype.updatePlayerById = function (playerDetailDto) {
-        return __awaiter(this, void 0, void 0, function () {
-            var playerDetailToUpdate, error_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        playerDetailToUpdate = null;
+                        console.log('loginDto', playerLoginDto);
+                        playerDetail = null;
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, 3, , 4]);
+                        _a.trys.push([1, 5, , 6]);
                         return [4 /*yield*/, this.playerDetailRepository.findOneBy({
-                                email: playerDetailDto.email
+                                email: playerLoginDto.email
                             })];
                     case 2:
-                        playerDetailToUpdate = _a.sent();
-                        if (!playerDetailToUpdate)
-                            throw new Error('Player not found');
-                        return [3 /*break*/, 4];
+                        playerDetail = _a.sent();
+                        if (!!playerDetail) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.playerDetailRepository.findOneBy({
+                                username: playerLoginDto.username
+                            })];
                     case 3:
-                        error_2 = _a.sent();
+                        playerDetail = _a.sent();
+                        if (!playerDetail)
+                            throw new Error('Player not found');
+                        _a.label = 4;
+                    case 4: return [3 /*break*/, 6];
+                    case 5:
+                        error_1 = _a.sent();
                         throw new common_1.NotFoundException('Something not found', {
-                            cause: error_2,
+                            cause: error_1,
                             description: 'Player not found with this email'
                         });
-                    case 4: 
-                    // if (playerDetailDto.fname !== null)
-                    //   playerDetailToUpdate.fname = playerDetailDto.fname;
-                    // if (playerDetailDto.lname !== null)
-                    //   playerDetailToUpdate.lname = playerDetailDto.lname;
-                    // if (playerDetailDto.age !== null)
-                    //   playerDetailToUpdate.age = playerDetailDto.age;
-                    // if (playerDetailDto.username !== null)
-                    //   playerDetailToUpdate.username = playerDetailDto.username;
-                    return [2 /*return*/, this.playerDetailRepository.save(playerDetailToUpdate)];
+                    case 6:
+                        console.log('playerDetail', playerDetail);
+                        _a.label = 7;
+                    case 7:
+                        _a.trys.push([7, 9, , 10]);
+                        return [4 /*yield*/, this.checkPassword(playerLoginDto.password, playerDetail.password)];
+                    case 8:
+                        _a.sent();
+                        return [3 /*break*/, 10];
+                    case 9:
+                        error_2 = _a.sent();
+                        throw new common_1.UnauthorizedException();
+                    case 10:
+                        payload = {
+                            playerId: playerDetail.id,
+                            username: playerDetail.username,
+                            email: playerDetail.email
+                        };
+                        return [4 /*yield*/, this.jwtService.signAsync(payload)];
+                    case 11:
+                        accessToken = _a.sent();
+                        playerDetail.token = accessToken;
+                        this.playerDetailRepository.save(playerDetail);
+                        return [2 /*return*/, {
+                                access_token: accessToken
+                            }];
                 }
             });
         });
     };
     //Check Password
-    PlayerService.prototype.checkPassword = function (password, hashedPassword) {
+    AuthService.prototype.checkPassword = function (password, hashedPassword) {
         return __awaiter(this, void 0, void 0, function () {
             var match, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log("check");
+                        console.log('check');
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
@@ -178,10 +145,10 @@ var PlayerService = /** @class */ (function () {
             });
         });
     };
-    PlayerService = __decorate([
+    AuthService = __decorate([
         (0, common_1.Injectable)(),
         __param(0, (0, typeorm_1.InjectRepository)(player_entity_1.PlayerDetailEntity))
-    ], PlayerService);
-    return PlayerService;
+    ], AuthService);
+    return AuthService;
 }());
-exports.PlayerService = PlayerService;
+exports.AuthService = AuthService;

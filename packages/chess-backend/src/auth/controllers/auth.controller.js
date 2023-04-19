@@ -45,84 +45,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.PlayerController = void 0;
+exports.AuthController = void 0;
 var common_1 = require("@nestjs/common");
-var PlayerController = /** @class */ (function () {
-    function PlayerController(playerService) {
-        this.playerService = playerService;
+var AuthController = /** @class */ (function () {
+    function AuthController(authService) {
+        this.authService = authService;
     }
-    PlayerController.prototype.createPlayer = function (createPlayerDto) {
+    AuthController.prototype.loginPlayer = function (playerLoginDto) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.playerService.createPlayer(createPlayerDto)];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    PlayerController.prototype.getPlayer = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.playerService.getPlayer()];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    PlayerController.prototype.getPlayerById = function (id) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.playerService.getPlayerById(id)];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    PlayerController.prototype.deletePlayerById = function (id) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.playerService.deletePlayerById(id)];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    PlayerController.prototype.updatePlayerById = function (playerDetailDto) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.playerService.updatePlayerById(playerDetailDto)];
+                    case 0: return [4 /*yield*/, this.authService.loginPlayer(playerLoginDto)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
     __decorate([
-        (0, common_1.Post)(),
+        (0, common_1.Post)('/login'),
         __param(0, (0, common_1.Body)())
-    ], PlayerController.prototype, "createPlayer");
-    __decorate([
-        (0, common_1.Get)()
-    ], PlayerController.prototype, "getPlayer");
-    __decorate([
-        (0, common_1.Get)('/:id'),
-        __param(0, (0, common_1.Param)('id'))
-    ], PlayerController.prototype, "getPlayerById");
-    __decorate([
-        (0, common_1.Delete)('/:id'),
-        __param(0, (0, common_1.Param)('id'))
-    ], PlayerController.prototype, "deletePlayerById");
-    __decorate([
-        (0, common_1.Patch)(),
-        __param(0, (0, common_1.Body)())
-    ], PlayerController.prototype, "updatePlayerById");
-    PlayerController = __decorate([
-        (0, common_1.Controller)('player')
-    ], PlayerController);
-    return PlayerController;
+    ], AuthController.prototype, "loginPlayer");
+    AuthController = __decorate([
+        (0, common_1.Controller)('auth')
+    ], AuthController);
+    return AuthController;
 }());
-exports.PlayerController = PlayerController;
+exports.AuthController = AuthController;

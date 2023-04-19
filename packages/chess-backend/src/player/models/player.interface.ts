@@ -7,6 +7,6 @@ export interface PlayerDetail{
     username?:string,
     email?:string,
     password?:string,
-    token?:string,
+    refreshToken?:string,
     createdAt?:Date
 }

@@ -12,7 +12,7 @@ var PlayerDetailEntity = /** @class */ (function () {
     function PlayerDetailEntity() {
     }
     __decorate([
-        (0, typeorm_1.PrimaryGeneratedColumn)()
+        (0, typeorm_1.PrimaryGeneratedColumn)("uuid")
     ], PlayerDetailEntity.prototype, "id");
     __decorate([
         (0, typeorm_1.Column)()
@@ -24,16 +24,16 @@ var PlayerDetailEntity = /** @class */ (function () {
         (0, typeorm_1.Column)()
     ], PlayerDetailEntity.prototype, "age");
     __decorate([
-        (0, typeorm_1.Column)()
+        (0, typeorm_1.Column)({ unique: true })
     ], PlayerDetailEntity.prototype, "username");
     __decorate([
-        (0, typeorm_1.Column)()
+        (0, typeorm_1.Column)({ unique: true })
     ], PlayerDetailEntity.prototype, "email");
     __decorate([
         (0, typeorm_1.Column)()
     ], PlayerDetailEntity.prototype, "password");
     __decorate([
-        (0, typeorm_1.Column)()
+        (0, typeorm_1.Column)({ unique: true, nullable: true })
     ], PlayerDetailEntity.prototype, "token");
     __decorate([
         (0, typeorm_1.Column)({ type: 'time with time zone', "default": function () { return 'CURRENT_TIMESTAMP'; } })

@@ -1,11 +1,11 @@
 import { Exclude } from "class-transformer";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { PlayerDetail } from "./player.interface";
 
 @Entity('player_detail')
-export class PlayerDetailEntity{
+export class PlayerDetailEntity implements PlayerDetail{
    @PrimaryGeneratedColumn("uuid")
    id: number;
-
    @Column()
    fname: string;
    @Column()
@@ -16,10 +16,10 @@ export class PlayerDetailEntity{
    username: string;
    @Column({unique:true})
    email: string;
-   @Column()
+   @Column({select:false})
    password: string;
-   @Column({unique:true,nullable:true})
-   token!: string;
+   @Column({select:false, nullable:true})
+   refreshToken: string;
    @Column({type:'time with time zone', default: ()=> 'CURRENT_TIMESTAMP'})
    createdAt: Date;
 

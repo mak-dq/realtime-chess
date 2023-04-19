@@ -2,7 +2,6 @@ import { IsEmail, IsNotEmpty } from "class-validator";
 
 export class PlayerDetailDto {
     id:number;
-    @IsNotEmpty()
     fname:string;
     lname:string;
     age:number;

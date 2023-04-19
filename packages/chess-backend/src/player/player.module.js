@@ -19,7 +19,8 @@ var PlayerModule = /** @class */ (function () {
         (0, common_1.Module)({
             imports: [typeorm_1.TypeOrmModule.forFeature([player_entity_1.PlayerDetailEntity])],
             controllers: [player_controller_1.PlayerController],
-            providers: [player_service_1.PlayerService]
+            providers: [player_service_1.PlayerService],
+            exports: [player_service_1.PlayerService, typeorm_1.TypeOrmModule]
         })
     ], PlayerModule);
     return PlayerModule;
