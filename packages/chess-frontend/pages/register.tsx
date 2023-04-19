@@ -12,6 +12,9 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+import { register } from '../api/register';
+import { useRouter } from 'next/router';
+
 const theme = createTheme();
 
 interface details {
@@ -24,7 +27,18 @@ interface details {
   confirmPassword: string;
 }
 
+interface userData {
+  fname: string;
+  lname: string;
+  username: string;
+  age: number;
+  email: string;
+  password: string;
+}
+
 export default function Register() {
+  const router = useRouter();
+
   const [details, setDetails] = useState({
     firstName: '',
     lastName: '',
@@ -44,9 +58,8 @@ export default function Register() {
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
   function checkEmail(email: string) {
-    var validRegex =
-      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
+    var validRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    // /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if (email.match(validRegex)) return true;
     else return false;
   }
@@ -117,7 +130,7 @@ export default function Register() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!checkNames(details)) return;
@@ -136,7 +149,25 @@ export default function Register() {
 
     if (!checkPassword(details)) return;
 
-    console.log(details);
+    // console.log(details);
+
+    const data: userData = {
+      fname: details.firstName,
+      lname: details.lastName,
+      age: parseInt(details.age),
+      username: details.username,
+      email: details.email,
+      password: details.password,
+    };
+
+    // api call
+    console.log(register(data));
+
+    router.push({
+      pathname: '/login',
+      query: { returnUrl: router.asPath },
+    });
+
     setDetails({
       firstName: '',
       lastName: '',
@@ -148,7 +179,9 @@ export default function Register() {
     });
   };
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     // console.log('name, value :>> ', name, value);
     setDetails((prevDetails) => ({
