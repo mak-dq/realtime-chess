@@ -13,7 +13,9 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { login } from '../api/login';
-import { register } from '../api/register';
+
+import { userContext } from '../Contexts/userContext';
+import { useContext } from 'react';
 
 const theme = createTheme();
 
@@ -27,6 +29,9 @@ export default function Register() {
     usernameOrEmail: '',
     password: '',
   });
+
+  const { userId, setUserId, token, setToken } =
+    useContext(userContext);
 
   const [usernameOrEmailError, setUsernameOrEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -61,7 +66,7 @@ export default function Register() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let type: string;
     if (!checkUsernameOrEmail(details.usernameOrEmail)) return;
@@ -83,7 +88,12 @@ export default function Register() {
         password: details.password,
       };
     }
-    console.log(login(data));
+
+    const res = await login(data);
+    setUserId(res.id);
+    setToken(res.access_token);
+    // console.log("1", userId, token);
+    console.log("2",res);
 
     setDetails({
       usernameOrEmail: '',
