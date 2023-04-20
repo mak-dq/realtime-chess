@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import LoginSignup from './LoginSignup';
-
+import UserSideMenu from './UserSideMenu';
 
 
 const Sidebar = () => {
@@ -11,11 +11,12 @@ const Sidebar = () => {
         left: '0',
         backgroundColor: 'black',
         height: '92vh',
-        width: '15vw',
-        padding:"30px"
+        width: '16vw',
+        padding:"22px"
       }}
     >
       <LoginSignup direction={"column"}/>
+      <UserSideMenu/>
     </Box>
   );
 };

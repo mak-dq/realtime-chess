@@ -2,8 +2,15 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import Sidebar from '../components/Sidebar';
 import Image from 'next/image';
+import { useEffect } from 'react';
+import { userContext } from '../Contexts/userContext';
+import { useContext } from 'react';
 
 export function Index() {
+  // const {userId} = useContext(userContext)
+  useEffect(() => {
+    console.log('we are home');
+  }, []);
   return (
     <Container sx={{ margin: '0', padding: '0 !important', height: '90vh' }}>
       <Stack direction="row">
@@ -13,11 +20,11 @@ export function Index() {
             position: 'absolute',
             left: '15vw',
             height: '92vh',
-            width:"85vw",
+            width: '85vw',
           }}
         >
           <Stack
-            sx={{ margin: '50px 30px'}}
+            sx={{ margin: '50px 30px' }}
             direction="row"
             className="d-flex"
           >
@@ -27,7 +34,16 @@ export function Index() {
               src="/../public/standardboard.png"
               alt=""
             />
-            <Box className="d-flex" sx={{flexDirection:"column", color: 'white', height: '100px', width: '500px', margin:"0"}}>
+            <Box
+              className="d-flex"
+              sx={{
+                flexDirection: 'column',
+                color: 'white',
+                height: '100px',
+                width: '500px',
+                margin: '0',
+              }}
+            >
               <Typography
                 sx={{
                   fontSize: '30px !important',
@@ -46,7 +62,7 @@ export function Index() {
                     backgroundColor: '#1d891d',
                   },
                   backgroundColor: '#0e7a0e',
-                  marginTop:"10px",
+                  marginTop: '10px',
                 }}
                 size="small"
               >
