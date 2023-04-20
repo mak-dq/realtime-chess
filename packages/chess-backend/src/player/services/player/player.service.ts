@@ -1,7 +1,9 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PlayerDetailEntity } from '../../models/player.entity';
@@ -10,6 +12,8 @@ import { Observable, from } from 'rxjs';
 import { PlayerDetailDto } from '../../dtos/playerDetail.dto';
 import * as bcrypt from 'bcrypt';
 import { CreatePlayerDto } from '../../dtos/createPlayer.dto';
+import { ChangePasswordDto } from '../../dtos/changePassword.dto';
+import { log } from 'console';
 
 @Injectable()
 export class PlayerService {
@@ -19,11 +23,13 @@ export class PlayerService {
   ) {}
 
   //Register Player
-  async createPlayer(player: CreatePlayerDto): Promise<PlayerDetailDto>{
+  async createPlayer(player: CreatePlayerDto): Promise<PlayerDetailDto> {
     try {
-
       const playerDetailToUpdate = await this.playerDetailRepository.findOne({
-        where:{email:player.email.toLowerCase() , username:player.username.toLowerCase()},
+        where: {
+          email: player.email.toLowerCase(),
+          username: player.username.toLowerCase(),
+        },
       });
       if (playerDetailToUpdate) throw new Error('Player already present');
     } catch (error) {
@@ -32,18 +38,18 @@ export class PlayerService {
         description: 'Player is already registered',
       });
     }
-    const salt = await bcrypt.genSalt(15);
-    const hashPassword = await bcrypt.hash(player.password, salt);
+    //encryption
+    const hashPassword = await this.encryptPassword(player.password);
     player.password = hashPassword;
-    const newPlayer=(this.playerDetailRepository.create(player));
-    await this.playerDetailRepository.save(newPlayer)
-    const playerDetail=new PlayerDetailDto();
-    playerDetail.id= newPlayer.id;
-    playerDetail.fname= newPlayer.fname;
-    playerDetail.lname= newPlayer.lname;
-    playerDetail.age= newPlayer.age;
-    playerDetail.username= newPlayer.username;
-    playerDetail.email= newPlayer.email;
+    //create and save player
+    const newPlayer = this.playerDetailRepository.create(player);
+    await this.playerDetailRepository.save(newPlayer);
+    const playerDetail = new PlayerDetailDto();
+    playerDetail.fname = newPlayer.fname;
+    playerDetail.lname = newPlayer.lname;
+    playerDetail.age = newPlayer.age;
+    playerDetail.username = newPlayer.username;
+    playerDetail.email = newPlayer.email;
     return playerDetail;
   }
 
@@ -58,19 +64,24 @@ export class PlayerService {
   }
 
   //Delete Player By Id
-  deletePlayerById(id: number): Observable<DeleteResult> {
-    return from(this.playerDetailRepository.delete(id));
+  async deletePlayerById(id: number): Promise<DeleteResult> {
+    return await this.playerDetailRepository.delete(id);
   }
 
   //Update Player By Email
-  async updatePlayerById(
+  async updatePlayer(
+    id: number,
     playerDetailDto: PlayerDetailDto
-  ): Promise<Observable<UpdateResult>> {
+  ): Promise<UpdateResult> {
     let playerDetailToUpdate = null;
     try {
-      playerDetailToUpdate = await this.playerDetailRepository.findOneBy({
+      playerDetailToUpdate = await this.playerDetailRepository.findOneBy([{
+        id: id,
         email: playerDetailDto.email,
-      });
+      },{
+        id,
+        username:playerDetailDto.username
+      }]);
       if (!playerDetailToUpdate) throw new Error('Player not found');
     } catch (error) {
       throw new NotFoundException('Something not found', {
@@ -78,23 +89,49 @@ export class PlayerService {
         description: 'Player not found with this email',
       });
     }
-    return this.playerDetailRepository.save(playerDetailToUpdate);
+    return await this.playerDetailRepository.update(id, {
+      fname: playerDetailDto.fname,
+      lname: playerDetailDto.lname,
+      age: playerDetailDto.age,
+    });
   }
 
   //Check Password
   async checkPassword(password: string, hashedPassword: string) {
-    console.log("check");
-    try {
-      
-      const match = await bcrypt.compareSync(password, hashedPassword);
-      console.log(match);
-      if (match == false) {
-        throw new Error('Invalid Password');
-      }
-    } catch (error) {
-     console.log(error);
-      
+    const match = await bcrypt.compareSync(password, hashedPassword);
+    return match;
+  }
+
+  async changePassword(
+    id: number,
+    changePasswordDto: ChangePasswordDto,
+    newPassword: string
+  ): Promise<UpdateResult> {
+    const playerDetail = await this.playerDetailRepository.findOne({
+      select: ['id', 'username', 'email', 'password'],
+      where: { id, username: changePasswordDto.username },
+    });
+    if (!playerDetail) {
+      throw new UnauthorizedException('Invalid Access');
     }
-      
+
+    const match = await this.checkPassword(
+      changePasswordDto.password,
+      playerDetail.password
+    );
+    if (!match) throw new UnauthorizedException('Incorrect Password');
+    const hashedPassword = await this.encryptPassword(
+      newPassword['newPassword']
+    );
+
+    return await this.playerDetailRepository.update(playerDetail.id, {
+      password: hashedPassword,
+    });
+  }
+
+  async encryptPassword(password: string) {
+    const salt = await bcrypt.genSalt(15);
+    const hashPassword = await bcrypt.hash(password, salt);
+    return hashPassword;
   }
 }

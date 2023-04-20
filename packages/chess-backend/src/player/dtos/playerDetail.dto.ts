@@ -1,13 +1,14 @@
-import { IsEmail, IsNotEmpty } from "class-validator";
+import { IsEmail, IsNumber, IsString } from "class-validator";
 
 export class PlayerDetailDto {
-    id:number;
+    @IsString()
     fname:string;
+    @IsString()
     lname:string;
+    @IsNumber()
     age:number;
-    @IsNotEmpty()
+    @IsString()
     username: string;
     @IsEmail()
-    @IsNotEmpty()
     email:string;
 }

@@ -8,9 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 exports.__esModule = true;
 exports.PlayerModule = void 0;
 var common_1 = require("@nestjs/common");
-var player_controller_1 = require("./controllers/player/player.controller");
-var player_service_1 = require("./services/player/player.service");
-var player_entity_1 = require("./models/player.entity");
+var player_controller_1 = require("../controllers/player/player.controller");
+var player_service_1 = require("../services/player/player.service");
+var player_entity_1 = require("../models/player.entity");
 var typeorm_1 = require("@nestjs/typeorm");
 var PlayerModule = /** @class */ (function () {
     function PlayerModule() {

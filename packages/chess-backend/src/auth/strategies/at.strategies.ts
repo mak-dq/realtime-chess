@@ -4,7 +4,7 @@ import { jwtConstants } from "../constants";
 import { Injectable } from "@nestjs/common";
 
 type JwtPayload ={
-    id:string,
+    sub:number,
     username:string
 }
 
@@ -13,11 +13,10 @@ export class AtStrategy extends PassportStrategy(Strategy,'jwt'){
     constructor(){
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
             secretOrKey:jwtConstants.secret
         });
     }
     validate(payload:JwtPayload){
-        return payload;//req.user=payload
+        return { id: payload.sub, username: payload.username };
     }    
 }
