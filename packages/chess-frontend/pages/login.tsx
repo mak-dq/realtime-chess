@@ -16,6 +16,11 @@ import { login } from '../api/login';
 
 import { userContext } from '../Contexts/userContext';
 import { useContext } from 'react';
+import { useRouter } from 'next/router';
+
+import Swal from 'sweetalert2';
+
+import Cookies from 'js-cookie';
 
 const theme = createTheme();
 
@@ -24,14 +29,15 @@ interface details {
   password: string;
 }
 
-export default function Register() {
+export default function loginPage() {
+  const router = useRouter();
+
   const [details, setDetails] = useState({
     usernameOrEmail: '',
     password: '',
   });
 
-  const { userId, setUserId, token, setToken } =
-    useContext(userContext);
+  const { userId, setUserId, token, setToken } = useContext(userContext);
 
   const [usernameOrEmailError, setUsernameOrEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -90,10 +96,60 @@ export default function Register() {
     }
 
     const res = await login(data);
+    let msg = 'something';
+    if (res.response) msg = res.response.data.error;
+    console.log('res :>> ', res);
+    if (res instanceof Error) {
+      // const msg = res.A.data.error;
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        customClass: { container: 'margin-top' },
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer);
+          toast.addEventListener('mouseleave', Swal.resumeTimer);
+        },
+      });
+      Toast.fire({
+        icon: 'error',
+        title: `${msg}`,
+      });
+      return;
+    }
+
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      customClass: { container: 'margin-top' },
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      },
+    });
+    Toast.fire({
+      icon: 'success',
+      title: 'Logged in successfully',
+    });
+
     setUserId(res.id);
     setToken(res.access_token);
+
+    Cookies.set('access-token', res.access_token);
+    Cookies.set('user-id', res.id);
+
+    router.push({
+      pathname: '/',
+      query: { returnUrl: router.asPath },
+    });
+
     // console.log("1", userId, token);
-    console.log("2",res);
+    console.log('res:>>', res);
 
     setDetails({
       usernameOrEmail: '',

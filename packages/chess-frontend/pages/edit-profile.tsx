@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -7,12 +7,15 @@ import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
+import SettingsIcon from '@mui/icons-material/Settings';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { userContext } from '../Contexts/userContext';
+import { useContext } from 'react';
 
-import { register } from '../api/register';
+import { fetchDetails } from '../api/fetchDetails';
+import { editDetails } from '../api/editDetails';
 import { useRouter } from 'next/router';
 
 import Swal from 'sweetalert2';
@@ -25,8 +28,6 @@ interface details {
   username: string;
   age: string;
   email: string;
-  password: string;
-  confirmPassword: string;
 }
 
 interface userData {
@@ -35,11 +36,11 @@ interface userData {
   username: string;
   age: number;
   email: string;
-  password: string;
 }
 
-export default function Register() {
+export default function editProfile() {
   const router = useRouter();
+  const { token, userId } = useContext(userContext);
 
   const [details, setDetails] = useState({
     firstName: '',
@@ -47,17 +48,40 @@ export default function Register() {
     username: '',
     age: '',
     email: '',
-    password: '',
-    confirmPassword: '',
   });
+
+  useEffect(() => {
+    let res: userData;
+    async function fetchDet() {
+      res = await fetchDetails(token, userId);
+      console.log(res);
+      for (const item of Object.entries(res)) {
+        if (item[0] === 'fname') {
+          setDetails((prevDetails) => ({
+            ...prevDetails,
+            firstName: item[1],
+          }));
+        } else if (item[0] === 'lname') {
+          setDetails((prevDetails) => ({
+            ...prevDetails,
+            lastName: item[1],
+          }));
+        } else {
+          setDetails((prevDetails) => ({
+            ...prevDetails,
+            [item[0]]: item[1],
+          }));
+        }
+      }
+    }
+    fetchDet();
+  }, []);
 
   const [firstNameError, setFirstNameError] = useState('');
   const [lastNameError, setLastNameError] = useState('');
   const [usernameError, setUsernameError] = useState('');
   const [ageError, setAgeError] = useState('');
   const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
   function checkEmail(email: string) {
     var validRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -104,34 +128,6 @@ export default function Register() {
     }
   }
 
-  function checkPassword(details: details) {
-    if (details.password !== details.confirmPassword) {
-      setPasswordError("Passwords doesn't match");
-      setConfirmPasswordError("Passwords doesn't match");
-      if (
-        document.activeElement !== document.getElementById('email') &&
-        document.activeElement !== document.getElementById('age')
-      ) {
-        document.getElementById('password').focus();
-      }
-      return false;
-    } else if (details.password === '') {
-      setPasswordError("Password can't be empty");
-      setConfirmPasswordError("Confirm Password can't be empty");
-      if (
-        document.activeElement !== document.getElementById('email') &&
-        document.activeElement !== document.getElementById('age')
-      ) {
-        document.getElementById('password').focus();
-      }
-      return false;
-    } else {
-      setPasswordError('');
-      setConfirmPasswordError('');
-      return true;
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -149,21 +145,16 @@ export default function Register() {
       setEmailError('');
     }
 
-    if (!checkPassword(details)) return;
-
-    // console.log(details);
-
     const data: userData = {
       fname: details.firstName,
       lname: details.lastName,
       age: parseInt(details.age),
       username: details.username,
       email: details.email,
-      password: details.password,
     };
 
     // api call
-    const res = await register(data);
+    const res = await editDetails(token, userId, data);
     if (res instanceof Error) {
       const Toast = Swal.mixin({
         toast: true,
@@ -184,7 +175,7 @@ export default function Register() {
       return;
     }
 
-    console.log('res :>> ', res);
+    // console.log('res :>> ', res);
 
     const Toast = Swal.mixin({
       toast: true,
@@ -200,13 +191,13 @@ export default function Register() {
     });
     Toast.fire({
       icon: 'success',
-      title: 'Registered successfully',
+      title: 'Updated successfully',
     });
 
-    router.push({
-      pathname: '/login',
-      query: { returnUrl: router.asPath },
-    });
+    // router.push({
+    //   pathname: '/login',
+    //   query: { returnUrl: router.asPath },
+    // });
 
     setDetails({
       firstName: '',
@@ -214,8 +205,6 @@ export default function Register() {
       username: '',
       age: '',
       email: '',
-      password: '',
-      confirmPassword: '',
     });
   };
 
@@ -239,7 +228,7 @@ export default function Register() {
         sx={{
           margin: 'autu 0',
           marginTop: '20px',
-          height: '660px',
+          height: '500px',
           borderRadius: '10px',
           backgroundColor: theme.palette.grey[300],
         }}
@@ -253,10 +242,10 @@ export default function Register() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <HowToRegIcon />
+            <SettingsIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Register
+            Edit Profile
           </Typography>
           <Box
             component="form"
@@ -265,6 +254,22 @@ export default function Register() {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  disabled
+                  id="email"
+                  value={details.email}
+                  type="email"
+                  label="Email Address"
+                  error={emailError !== ''}
+                  helperText={emailError !== '' ? emailError : ''}
+                  onChange={(e) => handleChange(e)}
+                  name="email"
+                  autoComplete="email"
+                />
+              </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
@@ -299,6 +304,7 @@ export default function Register() {
                   autoComplete="user-name"
                   name="username"
                   required
+                  disabled
                   value={details.username}
                   fullWidth
                   error={usernameError !== ''}
@@ -323,53 +329,6 @@ export default function Register() {
                   autoComplete="age"
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  value={details.email}
-                  type="email"
-                  label="Email Address"
-                  error={emailError !== ''}
-                  helperText={emailError !== '' ? emailError : ''}
-                  onChange={(e) => handleChange(e)}
-                  name="email"
-                  autoComplete="email"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  value={details.password}
-                  label="Password"
-                  error={passwordError !== ''}
-                  helperText={passwordError !== '' ? passwordError : ''}
-                  onChange={(e) => handleChange(e)}
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="confirmPassword"
-                  label="Confirm Password"
-                  type="password"
-                  value={details.confirmPassword}
-                  id="confirmPassword"
-                  error={confirmPasswordError !== ''}
-                  helperText={
-                    confirmPasswordError !== '' ? confirmPasswordError : ''
-                  }
-                  onChange={(e) => handleChange(e)}
-                  autoComplete="new-password"
-                />
-              </Grid>
             </Grid>
             <Button
               type="submit"
@@ -377,15 +336,8 @@ export default function Register() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Register
+              Update Details
             </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="/login" variant="body2">
-                  Already have an account? Login
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
       </Container>

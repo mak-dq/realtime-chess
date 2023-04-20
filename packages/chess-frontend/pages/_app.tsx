@@ -7,14 +7,21 @@ import {
   QueryClientProvider,
   // useQuery,
 } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { userContext } from '../Contexts/userContext';
+import Cookies from 'js-cookie';
+
 const queryClient = new QueryClient();
 
 function CustomApp({ Component, pageProps }: AppProps) {
   const [userId, setUserId] = useState('');
   const [token, setToken] = useState('');
-
+  useEffect(() => {
+    const cookieUserId = Cookies.get('user-id');
+    if(cookieUserId !== undefined)setUserId(cookieUserId);
+    const cookieToken = Cookies.get('access-token');
+    if(cookieToken !== undefined)setToken(cookieToken);
+  }, []);
   return (
     <>
       <userContext.Provider value={{ userId, setUserId, token, setToken }}>
