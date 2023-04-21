@@ -4,6 +4,7 @@ import { PlayerLoginDto } from '../../player/dtos/playerLogin.dto';
 import { Public } from '../../common/decorators/public.decorator';
 import { PlayerDetail } from '../../player/models/player.interface';
 import { RtGuard } from '../../common/guards';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -26,8 +27,6 @@ export class AuthController {
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   refreshTokens(@Request() req){
-    console.log(req.user);
-    
     return this.authService.refreshToken(req.user.id,req.user.refreshToken);
   }
 }

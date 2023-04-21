@@ -13,7 +13,6 @@ import { PlayerDetailDto } from '../../dtos/playerDetail.dto';
 import * as bcrypt from 'bcrypt';
 import { CreatePlayerDto } from '../../dtos/createPlayer.dto';
 import { ChangePasswordDto } from '../../dtos/changePassword.dto';
-import { log } from 'console';
 
 @Injectable()
 export class PlayerService {
@@ -59,29 +58,43 @@ export class PlayerService {
   }
 
   //Get Player By Id
-  async getPlayerById(id: number): Promise<Observable<PlayerDetailDto>> {
+  async getPlayerById(
+    id: number,
+    loggedId: number
+  ): Promise<Observable<PlayerDetailDto>> {
+    if (id !== loggedId) throw new ForbiddenException('Invalid Access');
     return await from(this.playerDetailRepository.findOneBy({ id: id }));
   }
 
   //Delete Player By Id
-  async deletePlayerById(id: number): Promise<DeleteResult> {
+  async deletePlayerById(id: number, loggedId: number): Promise<DeleteResult> {
+    if (id !== loggedId) {
+      throw new ForbiddenException('Invalid access');
+    }
     return await this.playerDetailRepository.delete(id);
   }
 
   //Update Player By Email
   async updatePlayer(
     id: number,
-    playerDetailDto: PlayerDetailDto
+    playerDetailDto: PlayerDetailDto,
+    loggedId: number
   ): Promise<UpdateResult> {
+    if (id !== loggedId) {
+      throw new ForbiddenException('Invalid access');
+    }
     let playerDetailToUpdate = null;
     try {
-      playerDetailToUpdate = await this.playerDetailRepository.findOneBy([{
-        id: id,
-        email: playerDetailDto.email,
-      },{
-        id,
-        username:playerDetailDto.username
-      }]);
+      playerDetailToUpdate = await this.playerDetailRepository.findOneBy([
+        {
+          id: id,
+          email: playerDetailDto.email,
+        },
+        {
+          id,
+          username: playerDetailDto.username,
+        },
+      ]);
       if (!playerDetailToUpdate) throw new Error('Player not found');
     } catch (error) {
       throw new NotFoundException('Something not found', {
