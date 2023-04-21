@@ -1,12 +1,13 @@
 import { API_URL } from './config';
 import axios from 'axios';
 
-export const login = async (userId : string) => {
+export const deleteUser = async (userId: string, token: string) => {
   const headers = {
     'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
   };
   try {
-    const response = await axios.post(`${API_URL}player/`, userId, {
+    const response = await axios.delete(`${API_URL}player/${userId}`, {
       headers,
     });
     return response.data;

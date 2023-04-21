@@ -128,34 +128,6 @@ export default function editProfile() {
     }
   }
 
-  // function checkPassword(details: details) {
-  //   if (details.password !== details.confirmPassword) {
-  //     setPasswordError("Passwords doesn't match");
-  //     setConfirmPasswordError("Passwords doesn't match");
-  //     if (
-  //       document.activeElement !== document.getElementById('email') &&
-  //       document.activeElement !== document.getElementById('age')
-  //     ) {
-  //       document.getElementById('password').focus();
-  //     }
-  //     return false;
-  //   } else if (details.password === '') {
-  //     setPasswordError("Password can't be empty");
-  //     setConfirmPasswordError("Confirm Password can't be empty");
-  //     if (
-  //       document.activeElement !== document.getElementById('email') &&
-  //       document.activeElement !== document.getElementById('age')
-  //     ) {
-  //       document.getElementById('password').focus();
-  //     }
-  //     return false;
-  //   } else {
-  //     setPasswordError('');
-  //     setConfirmPasswordError('');
-  //     return true;
-  //   }
-  // }
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -172,10 +144,6 @@ export default function editProfile() {
     } else {
       setEmailError('');
     }
-
-    // if (!checkPassword(details)) return;
-
-    // console.log(details);
 
     const data: userData = {
       fname: details.firstName,
@@ -336,6 +304,7 @@ export default function editProfile() {
                   autoComplete="user-name"
                   name="username"
                   required
+                  disabled
                   value={details.username}
                   fullWidth
                   error={usernameError !== ''}
