@@ -24,9 +24,8 @@ export class AuthService {
 
   //Get Tokens
   async getToken(username: string, id: number) {
-    
-    const payload = { sub:id, username };
-    
+    const payload = { sub: id, username };
+
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: jwtConstants.secret,
@@ -78,7 +77,7 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException();
     }
-    
+
     //Get Tokens
     const tokens = await this.getToken(playerDetail.username, playerDetail.id);
     await this.updateRt(playerDetail.id, tokens.refresh_token);
@@ -119,7 +118,7 @@ export class AuthService {
     });
     console.log(rt);
     console.log(playerDetail);
-    
+
     if (!playerDetail) throw new ForbiddenException('Access Denied');
     const rtMatch = await bcrypt.compare(rt, playerDetail.refreshToken);
     if (!rtMatch) throw new ForbiddenException('Access Denied');

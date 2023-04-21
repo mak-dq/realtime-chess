@@ -10,16 +10,19 @@ type JwtPayload = {
 };
 
 @Injectable()
-export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
+export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh-token') {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => {
+        return request.get('Refresh').replace('Bearer', '').trim();
+      }]),
       secretOrKey: jwtConstants.refreshSecret,
       passReqToCallback: true,
     });
   }
   validate(req: Request, payload: JwtPayload) {
-    const refreshToken = req.get('authorization').replace('Bearer', '').trim();
-     return { id: payload.sub, username: payload.username, refreshToken };
+    const refreshToken = req.get('Refresh').replace('Bearer', '').trim();
+    console.log(refreshToken);
+    return { id: payload.sub, username: payload.username, refreshToken };
   }
 }

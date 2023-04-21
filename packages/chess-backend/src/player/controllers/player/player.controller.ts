@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Request,
 } from '@nestjs/common';
 import { PlayerService } from '../../services/player/player.service';
 import { Observable } from 'rxjs';
@@ -34,22 +35,22 @@ export class PlayerController {
   }
   @Get('/:id')
   async getPlayerById(
-    @Param('id') id: number
+    @Param('id') id: number, @Request() req
   ): Promise<Observable<PlayerDetailDto>> {
-    return await this.playerService.getPlayerById(id);
+    return await this.playerService.getPlayerById(id,req.user.id);
   }
   @Delete('/:id')
-  deletePlayerById(
+  deletePlayerById(@Request() req,
     @Param('id') id: number
   ): Promise<DeleteResult> {
-    return this.playerService.deletePlayerById(id);
+    return this.playerService.deletePlayerById(id,req.user.id);
   }
   @Patch('/:id')
   updatePlayer(
     @Param('id') id:number,
-    @Body() playerDetailDto: PlayerDetailDto
+    @Body() playerDetailDto: PlayerDetailDto, @Request() req
   ): Promise<UpdateResult> {
-    return this.playerService.updatePlayer(id,playerDetailDto);
+    return this.playerService.updatePlayer(id,playerDetailDto,req.user.id);
   }
 
   @Post('/:id/changePassword')
