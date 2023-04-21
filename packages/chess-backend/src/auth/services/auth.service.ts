@@ -7,7 +7,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-
 import * as bcrypt from 'bcrypt';
 import { PlayerDetailEntity } from '../../player/models/player.entity';
 import { PlayerLoginDto } from '../../player/dtos/playerLogin.dto';
@@ -91,6 +90,8 @@ export class AuthService {
   //Update Refresh Token in DB
   async updateRt(id: number, refreshToken: string): Promise<UpdateResult> {
     refreshToken = await bcrypt.hash(refreshToken, 10);
+    console.log(refreshToken);
+    
     return await this.playerDetailRepository.update(id, {
       refreshToken: refreshToken,
     });
@@ -111,19 +112,19 @@ export class AuthService {
     }
   }
   //Refresh Method
-  async refreshToken(id: number, rt: string) {
-    const playerDetail = await this.playerDetailRepository.findOne({
-      select: ['id', 'username', 'email', 'refreshToken'],
-      where: { id: id },
-    });
-    console.log(rt);
-    console.log(playerDetail);
-
+  async refreshToken(rt: string) {
+    const  secret=jwtConstants.refreshSecret;
+    const decodedToken =  this.jwtService.verify(rt,{secret})
+    const playerDetail= await this.playerDetailRepository.findOne({
+        select: ['id', 'username', 'email', 'refreshToken'],
+        where:{id:decodedToken.sub, username:decodedToken.username}
+    })
+    
     if (!playerDetail) throw new ForbiddenException('Access Denied');
     const rtMatch = await bcrypt.compare(rt, playerDetail.refreshToken);
     if (!rtMatch) throw new ForbiddenException('Access Denied');
-    //Get Tokens
     const tokens = await this.getToken(playerDetail.username, playerDetail.id);
+    
     await this.updateRt(playerDetail.id, tokens.refresh_token);
     return {
       id: playerDetail.id,

@@ -6,7 +6,7 @@ import { PlayerModule } from '../../player/modules/player.module';
 import { AuthController } from '../controllers/auth.controller';
 import { AuthService } from '../services/auth.service';
 import { APP_GUARD } from '@nestjs/core';
-import { AtGuard } from '../../common/guards';
+import { AtGuard, RtGuard } from '../../common/guards';
 
 @Module({
   imports: [JwtModule.register({}), PlayerModule],
@@ -19,6 +19,7 @@ import { AtGuard } from '../../common/guards';
     },
     AtStrategy,
     RtStrategy,
+    RtGuard
   ],
 })
 export class AuthModule {}

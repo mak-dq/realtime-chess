@@ -1,10 +1,9 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Headers, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { PlayerLoginDto } from '../../player/dtos/playerLogin.dto';
 import { Public } from '../../common/decorators/public.decorator';
 import { PlayerDetail } from '../../player/models/player.interface';
 import { RtGuard } from '../../common/guards';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -22,11 +21,12 @@ export class AuthController {
   logoutTokens(@Request() req) : Promise<PlayerDetail>{
     return this.authService.logoutPlayer(req.user.id,req.user.username);
   }
-  
-  @UseGuards(RtGuard)
+
+  @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  refreshTokens(@Request() req){
-    return this.authService.refreshToken(req.user.id,req.user.refreshToken);
+  refreshTokens(@Headers('authorization') refreshToken:string){
+    refreshToken= refreshToken.replace('Bearer','').trim();
+    return this.authService.refreshToken(refreshToken);
   }
 }

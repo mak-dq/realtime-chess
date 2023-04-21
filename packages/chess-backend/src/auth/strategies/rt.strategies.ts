@@ -13,14 +13,14 @@ type JwtPayload = {
 export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest:ExtractJwt.fromBodyField('refresh'),
       secretOrKey: jwtConstants.refreshSecret,
       passReqToCallback: true,
       ignoreExpiration:false
     });
   }
   validate(req: Request, payload: JwtPayload) {
-    const refreshToken = req.get('Refresh').replace('Bearer', '').trim();
+    const refreshToken = req.get('refresh').replace('Bearer', '').trim();
     console.log(refreshToken);
     return { id: payload.sub, username: payload.username, refreshToken };
   }
