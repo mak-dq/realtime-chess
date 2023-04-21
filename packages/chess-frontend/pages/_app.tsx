@@ -17,11 +17,12 @@ function CustomApp({ Component, pageProps }: AppProps) {
   const [userId, setUserId] = useState('');
   const [token, setToken] = useState('');
   useEffect(() => {
+    console.log("userIdandTokenChanged");
     const cookieUserId = Cookies.get('user-id');
     if(cookieUserId !== undefined)setUserId(cookieUserId);
     const cookieToken = Cookies.get('access-token');
     if(cookieToken !== undefined)setToken(cookieToken);
-  }, []);
+  }, [userId, token]);
   return (
     <>
       <userContext.Provider value={{ userId, setUserId, token, setToken }}>

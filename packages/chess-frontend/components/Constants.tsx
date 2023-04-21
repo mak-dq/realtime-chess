@@ -16,5 +16,4 @@ export const MenuButtons: MenuButtonType[] = [
   { text: 'Edit Profile', icon: <EditRoundedIcon />, route: '/edit-profile' },
   { text: 'Delete Account', icon: <DeleteRoundedIcon />, route: '/delete-account' },
   { text: 'Update Password', icon: <KeyIcon />, route: '/update-password'},
-  { text: 'Logout', icon: <LogoutIcon />, route: '/update-password'},
 ];

@@ -97,8 +97,8 @@ export default function loginPage() {
 
     const res = await login(data);
     let msg = 'something';
-    if (res.response) msg = res.response.data.error;
-    console.log('res :>> ', res);
+    if (res.response) msg = res.response.data.error ? res.response.data.error : res.response.data.message;
+    // console.log('res :>> ', res);
     if (res instanceof Error) {
       // const msg = res.A.data.error;
       const Toast = Swal.mixin({

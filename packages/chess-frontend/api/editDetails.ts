@@ -1,5 +1,5 @@
 import { API_URL } from './config';
-import axios from 'axios';
+import axios from './instance';
 import { userContext } from '../Contexts/userContext';
 import { useContext } from 'react';
 
@@ -12,23 +12,11 @@ interface userData {
 }
 
 export const editDetails = async (
-  token: string,
   userId: string,
   userData: userData
 ) => {
-  const headers = {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
-    'ngrok-skip-browser-warning': 'true',
-  };
   try {
-    const response = await axios.patch(
-      `${API_URL}player/`,
-      { ...userData, userId },
-      {
-        headers,
-      }
-    );
+    const response = await axios.patch(`player/${userId}`, userData);
     return response.data;
   } catch (err) {
     console.error(err);

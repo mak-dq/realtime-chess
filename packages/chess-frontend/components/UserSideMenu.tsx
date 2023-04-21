@@ -4,6 +4,7 @@ import { userContext } from '../Contexts/userContext';
 import { useContext } from 'react';
 import MenuButton from './MenuButton';
 import { MenuButtons } from './Constants';
+import LogoutBtn from './LogoutBtn';
 
 export default function UserSideMenu() {
   const { userId } = useContext(userContext);
@@ -22,6 +23,7 @@ export default function UserSideMenu() {
               />
             );
           })}
+          <LogoutBtn />
         </Stack>
       )}
     </>

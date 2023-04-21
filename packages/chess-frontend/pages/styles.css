@@ -68,6 +68,11 @@ input:-webkit-autofill:active {
   margin-top: 70px;
 }
 
+strong{
+  font-weight: 450 !important;
+  margin-bottom: 3px;
+}
+
 /*
 .shadow {
   box-shadow: 0 0 #0000, 0 0 #0000, 0 10px 15px -3px rgba(0, 0, 0, 0.1),

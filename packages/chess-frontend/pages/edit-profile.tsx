@@ -40,7 +40,7 @@ interface userData {
 
 export default function editProfile() {
   const router = useRouter();
-  const { token, userId } = useContext(userContext);
+  const { userId } = useContext(userContext);
 
   const [details, setDetails] = useState({
     firstName: '',
@@ -50,10 +50,10 @@ export default function editProfile() {
     email: '',
   });
 
+  let res: userData;
   useEffect(() => {
-    let res: userData;
     async function fetchDet() {
-      res = await fetchDetails(token, userId);
+      res = await fetchDetails();
       console.log(res);
       for (const item of Object.entries(res)) {
         if (item[0] === 'fname') {
@@ -154,7 +154,7 @@ export default function editProfile() {
     };
 
     // api call
-    const res = await editDetails(token, userId, data);
+    const res = await editDetails(userId, data);
     if (res instanceof Error) {
       const Toast = Swal.mixin({
         toast: true,
@@ -194,10 +194,10 @@ export default function editProfile() {
       title: 'Updated successfully',
     });
 
-    // router.push({
-    //   pathname: '/login',
-    //   query: { returnUrl: router.asPath },
-    // });
+    router.push({
+      pathname: '/',
+      query: { returnUrl: router.asPath },
+    });
 
     setDetails({
       firstName: '',
