@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlayerModule } from '../player/modules/player.module';
 import { AuthModule } from '../auth/modules/auth.module';
+import { GatewayModule } from '../gateway/gateway.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AuthModule } from '../auth/modules/auth.module';
     }),
     PlayerModule,
     AuthModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService],
