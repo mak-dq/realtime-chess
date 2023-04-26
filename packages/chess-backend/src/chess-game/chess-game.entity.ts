@@ -2,18 +2,23 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { ChessGame } from './chess-game.interface';
 
 @Entity('chess-game')
-export class ChessGameEntity implements ChessGame{
+export class ChessGameEntity implements ChessGame {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'json', array: true, nullable: true })
-  playerIds: number[];
+  @Column()
+  whiteId: number;
+  @Column()
+  blackId: number;
 
   @Column()
   winnerId: number;
 
   @Column()
   loserId: number;
+
+  @Column()
+  isDraw: boolean;
 
   @Column({ type: 'json' })
   moves: string[];

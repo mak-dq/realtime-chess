@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlayerModule } from '../player/modules/player.module';
 import { AuthModule } from '../auth/modules/auth.module';
-import { GatewayModule } from '../gateway/gateway.module';
+import { ChessGameModule } from '../chess-game/chess-game.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { GatewayModule } from '../gateway/gateway.module';
     }),
     PlayerModule,
     AuthModule,
-    GatewayModule,
+    ChessGameModule,
   ],
   controllers: [AppController],
   providers: [AppService],
