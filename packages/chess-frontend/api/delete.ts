@@ -1,16 +1,9 @@
-import { API_URL } from './config';
-import axios from 'axios';
+import axios from './instance';
 
-export const deleteUser = async (userId: string, token: string) => {
-  const headers = {
-    'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true',
-    Authorization: `Bearer ${token}`,
-  };
+export const deleteUser = async (userId: string) => {
+  // console.log('userId :>> ', userId);
   try {
-    const response = await axios.delete(`${API_URL}player/${userId}`, {
-      headers,
-    });
+    const response = await axios.delete(`player/${userId}`);
     console.log(response.data);
     return response.data;
   } catch (err) {

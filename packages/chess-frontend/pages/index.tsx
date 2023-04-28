@@ -3,11 +3,8 @@ import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import Sidebar from '../components/Sidebar';
 import Image from 'next/image';
 import { useEffect } from 'react';
-import { userContext } from '../Contexts/userContext';
-import { useContext } from 'react';
 
 export function Index() {
-  // const {userId} = useContext(userContext)
   useEffect(() => {
     console.log('we are home');
   }, []);

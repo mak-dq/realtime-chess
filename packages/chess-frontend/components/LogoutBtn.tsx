@@ -12,20 +12,21 @@ export default function LogoutBtn() {
   const { setToken, setUserId } = useContext(userContext);
   const token = Cookies.get('access-token');
   // const userId = Cookies.get('user-id')
-  function handleClick() {
-    const res = logoutUser();
+  async function handleClick() {
+    const res = await logoutUser();
     if (res instanceof Error) {
-      console.log(res.message);
+      console.log('debug: ', res.message);
       return;
+    } else {
+      Cookies.set('access-token', '');
+      Cookies.set('user-id', '');
+      setToken(Cookies.get('access-token'));
+      setUserId(Cookies.get('user-id'));
+      router.push({
+        pathname: '/',
+        query: { returnUrl: router.asPath },
+      });
     }
-    Cookies.set('access-token', '');
-    Cookies.set('user-id', '');
-    setToken(Cookies.get('access-token'));
-    setUserId(Cookies.get('user-id'));
-    router.push({
-      pathname: '/',
-      query: { returnUrl: router.asPath },
-    });
   }
   return (
     <>
@@ -38,6 +39,7 @@ export default function LogoutBtn() {
           borderColor: 'white',
           fontSize: '12px',
           width: '100%',
+          height: '42px',
         }}
         variant="outlined"
         startIcon={<LogoutIcon />}
