@@ -45,7 +45,19 @@ export class ChessGameService {
     const chessGame = await this.chessGameRepository.findOneBy({ id: id });
     if (!chessGame)
       throw new NotFoundException('No game exists with this gameId');
-    chessGame.moves.push(data.move);
+      let piece=null;
+    if(data.moves.capturedPiece){
+      if(data.moves.capturedPiece.side.name=='white'){
+        piece=data.moves.capturedPiece.notation.toUpperCase();
+      }
+      else{
+        piece=data.moves.capturedPiece.notation.toLowerCase();
+      }
+      chessGame.pieces.filter(p=>{
+        return p!==piece;
+      })
+    }
+    chessGame.moves.push(data.moves);
     return this.chessGameRepository.save(chessGame);
   }
 
@@ -67,6 +79,8 @@ export class ChessGameService {
     return chessGame;
   }
 
+
+  //for checkmate also you can send resign message as it has the same game logic
   async resign(data: any) {
     const chessGame = await this.chessGameRepository.findOneBy({ id: data.id });
     if (!chessGame)

@@ -1,8 +1,9 @@
 export interface ChessGame {
-  id?: number;
-  playerIds?: object;
-  winnerId?: number;
-  loserId?: number;
+  id?: string;
+  whiteId?:string;
+  blackId?:string;
+  winnerId?: string;
+  loserId?: string;
   moves?: string[];
   createdAt?: Date;
 }

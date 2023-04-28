@@ -3,19 +3,19 @@ import { ChessGame } from './chess-game.interface';
 
 @Entity('chess-game')
 export class ChessGameEntity implements ChessGame {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
-  whiteId: number;
+  whiteId: string;
   @Column()
-  blackId: number;
+  blackId: string;
 
   @Column()
-  winnerId: number;
+  winnerId: string;
 
   @Column()
-  loserId: number;
+  loserId: string;
 
   @Column()
   isDraw: boolean;
@@ -23,6 +23,23 @@ export class ChessGameEntity implements ChessGame {
   @Column({ type: 'json' })
   moves: string[];
 
+  @Column({type:'json'})
+  pieces:string[]
+
   @Column({ type: 'time with time zone', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
+  constructor() {
+    // Set the initial values of the `pieces` array to represent the default setup of chess pieces
+    this.pieces = [
+      'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R',
+      'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
+      '', '', '', '', '', '', '', '',
+      '', '', '', '', '', '', '', '',
+      '', '', '', '', '', '', '', '',
+      '', '', '', '', '', '', '', '',
+      'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
+      'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',
+    ];
+  }
 }

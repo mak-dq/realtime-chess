@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlayerModule } from '../player/modules/player.module';
 import { AuthModule } from '../auth/modules/auth.module';
 import { ChessGameModule } from '../chess-game/chess-game.module';
+import { PlayerStatModule } from '../player-stat/player-stat.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ChessGameModule } from '../chess-game/chess-game.module';
     PlayerModule,
     AuthModule,
     ChessGameModule,
+    PlayerStatModule
   ],
   controllers: [AppController],
   providers: [AppService],

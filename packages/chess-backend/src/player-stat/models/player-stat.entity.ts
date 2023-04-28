@@ -6,7 +6,7 @@ import { PlayerDetailEntity } from "../../player/models/player.entity";
 export class PlayerStatEntity implements PlayerStat{
     @PrimaryGeneratedColumn("uuid")
     id: number;
-    @OneToOne(()=> PlayerDetailEntity, (player)=>player.id)
+    @OneToOne(()=> PlayerDetailEntity, (player)=>player.playerStat)
     @JoinColumn()
     player:PlayerDetailEntity;
     @Column()

@@ -11,7 +11,7 @@ import { ChessGameGatewayModule } from '../gateway/chess-game.gateway.module';
     ChessGameGatewayModule
   ],
   providers: [ChessGameService],
-  exports:[ChessGameService],
+  exports:[ChessGameService, TypeOrmModule],
   controllers: [ChessGameController],
 })
 export class ChessGameModule {}

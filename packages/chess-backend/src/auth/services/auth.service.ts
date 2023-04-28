@@ -22,7 +22,7 @@ export class AuthService {
   ) {}
 
   //Get Tokens
-  async getToken(username: string, id: number) {
+  async getToken(username: string, id: string) {
     const payload = { sub: id, username };
 
     const [at, rt] = await Promise.all([
@@ -88,7 +88,7 @@ export class AuthService {
   }
 
   //Update Refresh Token in DB
-  async updateRt(id: number, refreshToken: string): Promise<UpdateResult> {
+  async updateRt(id: string, refreshToken: string): Promise<UpdateResult> {
     refreshToken = await bcrypt.hash(refreshToken, 10);
     console.log(refreshToken);
     
@@ -98,7 +98,7 @@ export class AuthService {
   }
 
   //Logout Method
-  async logoutPlayer(id: number, username: string): Promise<PlayerDetail> {
+  async logoutPlayer(id: string, username: string): Promise<PlayerDetail> {
     const playerDetail = await this.playerDetailRepository.findOne({
       select: ['id', 'username', 'email', 'refreshToken'],
       where: [{ id: id }, { username: username }],

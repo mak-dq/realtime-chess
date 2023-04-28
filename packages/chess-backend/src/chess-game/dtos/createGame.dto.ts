@@ -1,4 +1,4 @@
 export class CreateGameDto{
-    whiteId:number;
-    blackId:number;
+    whiteId:string;
+    blackId:string;
 }
