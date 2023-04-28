@@ -12,10 +12,11 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 describe('PlayerController', () => {
   let controller: PlayerController;
   let service: PlayerService;
-
+  
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PlayerController],
+
       providers: [
         {
           provide: PlayerService,

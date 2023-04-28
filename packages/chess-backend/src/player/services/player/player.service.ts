@@ -61,12 +61,14 @@ export class PlayerService {
   async getPlayerById(
     id: string,
     loggedId: string
+
   ): Promise<Observable<PlayerDetailDto>> {
     if (id !== loggedId) throw new ForbiddenException('Invalid Access');
     return await from(this.playerDetailRepository.findOneBy({ id: id }));
   }
 
   //Delete Player By Id
+
   async deletePlayerById(id: string, loggedId: string): Promise<DeleteResult> {
     if (id !== loggedId) {
       throw new ForbiddenException('Invalid access');
@@ -79,6 +81,7 @@ export class PlayerService {
     id: string,
     playerDetailDto: PlayerDetailDto,
     loggedId: string
+
   ): Promise<UpdateResult> {
     if (id !== loggedId) {
       throw new ForbiddenException('Invalid access');
@@ -116,7 +119,9 @@ export class PlayerService {
   }
 
   async changePassword(
+
     id: string,
+
     changePasswordDto: ChangePasswordDto,
     newPassword: string
   ): Promise<UpdateResult> {
