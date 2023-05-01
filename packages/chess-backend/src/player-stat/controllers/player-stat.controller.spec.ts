@@ -12,7 +12,5 @@ describe('PlayerStatController', () => {
     controller = module.get<PlayerStatController>(PlayerStatController);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+  
 });

@@ -4,10 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ChessGameEntity } from './chess-game.entity';
 import { Repository } from 'typeorm';
-import { ChessGameGateway } from '../gateway/chess-game.gateway';
-import { CreateGameDto} from './dtos/createGame.dto';
+import { ChessGameGateway } from '../../gateway/chess-game.gateway';
+import { CreateGameDto } from '../dtos/createGame.dto';
+import { ChessGameEntity } from '../models/chess-game.entity';
 
 @Injectable()
 export class ChessGameService {
@@ -17,17 +17,17 @@ export class ChessGameService {
     private readonly chessGameGateway: ChessGameGateway
   ) {}
 
-  joinLobby(id:number){
-    const lobby=[];
+  joinLobby(id: number) {
+    const lobby = [];
     lobby.push(id);
-    const createGameDto=new CreateGameDto();
+    const createGameDto = new CreateGameDto();
 
-    if(lobby.length>0) {
-      createGameDto.whiteId=lobby[0]
+    if (lobby.length > 0) {
+      createGameDto.whiteId = lobby[0];
     }
-    if(lobby.length==2){
-      createGameDto.blackId=lobby[1]
-      return this.createGame(createGameDto)
+    if (lobby.length == 2) {
+      createGameDto.blackId = lobby[1];
+      return this.createGame(createGameDto);
     }
   }
 
@@ -45,18 +45,15 @@ export class ChessGameService {
     const chessGame = await this.chessGameRepository.findOneBy({ id: id });
     if (!chessGame)
       throw new NotFoundException('No game exists with this gameId');
-      let piece=null;
-    if(data.moves.capturedPiece){
-      if(data.moves.capturedPiece.side.name=='white'){
-        piece=data.moves.capturedPiece.notation.toUpperCase();
+    let piece = null;
+
+    if (data.moves.capturedPiece) {
+        piece = data.moves.capturedPiece;
       }
-      else{
-        piece=data.moves.capturedPiece.notation.toLowerCase();
+      const index = chessGame.pieces.indexOf(piece);
+      if (index > -1) {
+        chessGame.pieces.splice(index, 1);
       }
-      chessGame.pieces.filter(p=>{
-        return p!==piece;
-      })
-    }
     chessGame.moves.push(data.moves);
     return this.chessGameRepository.save(chessGame);
   }
@@ -78,7 +75,6 @@ export class ChessGameService {
     chessGame.isDraw = data.isDraw;
     return chessGame;
   }
-
 
   //for checkmate also you can send resign message as it has the same game logic
   async resign(data: any) {

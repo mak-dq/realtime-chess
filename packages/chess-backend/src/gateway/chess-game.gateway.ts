@@ -7,7 +7,7 @@ import {
   OnGatewayInit,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ChessGameService } from '../chess-game/chess-game.service';
+import { ChessGameService } from '../chess-game/services/chess-game.service';
 import { CreateGameDto } from '../chess-game/dtos/createGame.dto';
 import { Inject, forwardRef } from '@nestjs/common';
 
@@ -55,6 +55,8 @@ export class ChessGameGateway
     client.broadcast.emit('join', data);
   }
 
+
+  // send `${color+type}` in the move object
   @SubscribeMessage('move')
   handleMove(client: Socket, data: any) {
     const wsRes = this.chessGameService.saveMoves(data);

@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PlayerStatEntity } from './models/player-stat.entity';
+import { PlayerStatEntity } from '../models/player-stat.entity';
 import { Repository } from 'typeorm';
-import { ChessGameEntity } from '../chess-game/chess-game.entity';
-import { PlayerStatDto } from './dtos/playerStat.dto';
+import { PlayerStatDto } from '../dtos/playerStat.dto';
+import { ChessGameEntity } from '../../chess-game/models/chess-game.entity';
 
 @Injectable()
 export class PlayerStatService {
@@ -15,11 +15,7 @@ export class PlayerStatService {
   ) {}
 
   async createPlayerStat(id: string) {
-    console.log(id);
     id = JSON.parse(JSON.stringify(id));
-    console.log(id);
-
-    console.log('inside creating  player stat');
     let chessGame = null;
     try {
       const where = [];
@@ -29,9 +25,8 @@ export class PlayerStatService {
         where,
       });
     } catch (error) {
-      console.log(error);
+       throw new Error(error)
     }
-    console.log(chessGame);
 
     if (!chessGame[0])
       throw new NotFoundException('Player has not played any game');
@@ -51,15 +46,16 @@ export class PlayerStatService {
     playerStatDto.winCount = winCount;
     playerStatDto.lossCount = lossCount;
     playerStatDto.playerId = id;
-    return this.playerStatRepository.save(playerStatDto);
+    this.playerStatRepository.save(playerStatDto);
+    return playerStatDto;
   }
-  getPlayerStat(id: any) {
-    let playerStat = null;
+  async getPlayerStat(id: any) {
+    let playerStatDto:PlayerStatDto = null;
     try {
-      playerStat = this.createPlayerStat(id);
+      playerStatDto = await this.createPlayerStat(id);
     } catch (err) {
       throw new Error(err);
     }
-    return playerStat;
+    return playerStatDto;
   }
 }

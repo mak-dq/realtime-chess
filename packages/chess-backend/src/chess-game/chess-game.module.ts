@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ChessGameService } from './chess-game.service';
+import { ChessGameService } from './services/chess-game.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ChessGameEntity } from './chess-game.entity';
-import { ChessGameController } from './chess-game.controller';
 import { ChessGameGatewayModule } from '../gateway/chess-game.gateway.module';
+import { ChessGameEntity } from './models/chess-game.entity';
+import { ChessGameController } from './controllers/chess-game.controller';
 
 @Module({
   imports: [
