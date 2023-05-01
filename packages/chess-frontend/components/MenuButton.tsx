@@ -20,6 +20,7 @@ export default function MenuButton(props: textIcon) {
             borderColor: 'white',
             fontSize: '12px',
             width: '100%',
+            height: '42px',
           }}
           variant="outlined"
           startIcon={props.icon}

@@ -15,7 +15,7 @@ export default function deleteAccount() {
   const userId = Cookies.get('user-id');
   // console.log('deleteResp> ', deleteUser(userId, token));
   const handleClick = () => {
-    deleteUser(userId, token);
+    deleteUser(userId);
     logoutUser();
   };
   return (

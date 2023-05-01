@@ -4,15 +4,12 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import LockResetIcon from '@mui/icons-material/LockReset';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-import { login } from '../api/login';
 
 import { userContext } from '../Contexts/userContext';
 import { useContext } from 'react';
@@ -20,84 +17,73 @@ import { useRouter } from 'next/router';
 
 import Swal from 'sweetalert2';
 
-import Cookies from 'js-cookie';
+import { updatePassword } from '../api/updatePassword';
 
 const theme = createTheme();
 
 interface details {
-  usernameOrEmail: string;
+  oldPassword: string;
   password: string;
+  confirmPassword: string;
 }
 
-export default function loginPage() {
+export default function updatePasswordPage() {
+  const { userId } = useContext(userContext);
   const router = useRouter();
-
   const [details, setDetails] = useState({
-    usernameOrEmail: '',
+    oldPassword: '',
     password: '',
+    confirmPassword: '',
   });
 
-  const { userId, setUserId, token, setToken } = useContext(userContext);
-
-  const [usernameOrEmailError, setUsernameOrEmailError] = useState('');
+  const [oldPasswordError, setOldPasswordError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-
-  function checkEmail(email: string) {
-    var validRegex =
-      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
-    if (email.match(validRegex)) return true;
-    else return false;
-  }
-
-  function checkUsernameOrEmail(usernameOrEmail: string) {
-    if (usernameOrEmail === '') {
-      setUsernameOrEmailError('Username or Email is required');
-      document.getElementById('username').focus();
-      return false;
-    } else {
-      setUsernameOrEmailError('');
-      return true;
-    }
-  }
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
   function checkPassword(details: details) {
+    if (details.oldPassword === '') {
+      setOldPasswordError("Current password can't be empty");
+    } else {
+      setOldPasswordError('');
+    }
     if (details.password === '') {
-      setPasswordError("Password can't be empty");
+      setPasswordError("New password can't be empty");
+      setConfirmPasswordError("Confirm Password can't be empty");
       document.getElementById('password').focus();
+      return false;
+    } else if (details.password !== details.confirmPassword) {
+      setPasswordError("Passwords doesn't match");
+      setConfirmPasswordError("Passwords doesn't match");
+      document.getElementById('confirm-password').focus();
       return false;
     } else {
       setPasswordError('');
+      setConfirmPasswordError('');
+      setOldPasswordError('');
       return true;
     }
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let type: string;
-    if (!checkUsernameOrEmail(details.usernameOrEmail)) return;
-
-    type = checkEmail(details.usernameOrEmail) ? 'email' : 'username';
 
     if (!checkPassword(details)) return;
 
     // console.log(details, type);
-    let data;
-    if (type === 'email') {
-      data = {
-        email: details.usernameOrEmail,
-        password: details.password,
-      };
-    } else {
-      data = {
-        username: details.usernameOrEmail,
-        password: details.password,
-      };
-    }
+    let data: details;
+    data = {
+      oldPassword: details.oldPassword,
+      password: details.password,
+      confirmPassword: details.confirmPassword,
+    };
 
-    const res = await login(data);
+    const res = await updatePassword(data, userId);
+
     let msg = 'something';
-    if (res.response) msg = res.response.data.error ? res.response.data.error : res.response.data.message;
+    if (res.response)
+      msg = res.response.data.error
+        ? res.response.data.error
+        : res.response.data.message;
     // console.log('res :>> ', res);
     if (res instanceof Error) {
       // const msg = res.A.data.error;
@@ -134,14 +120,8 @@ export default function loginPage() {
     });
     Toast.fire({
       icon: 'success',
-      title: 'Logged in successfully',
+      title: 'Password updated successfully',
     });
-
-    setUserId(res.id);
-    setToken(res.access_token);
-
-    Cookies.set('access-token', res.access_token);
-    Cookies.set('user-id', res.id);
 
     router.push({
       pathname: '/',
@@ -152,8 +132,9 @@ export default function loginPage() {
     console.log('res:>>', res);
 
     setDetails({
-      usernameOrEmail: '',
+      oldPassword: '',
       password: '',
+      confirmPassword: '',
     });
   };
 
@@ -177,7 +158,7 @@ export default function loginPage() {
         sx={{
           margin: 'autu 0',
           marginTop: '20px',
-          height: '460px',
+          height: '500px',
           borderRadius: '10px',
           backgroundColor: theme.palette.grey[300],
         }}
@@ -191,10 +172,10 @@ export default function loginPage() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <VpnKeyIcon />
+            <LockResetIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Login
+            Update Password
           </Typography>
           <Box
             component="form"
@@ -205,19 +186,17 @@ export default function loginPage() {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  autoComplete="user-name"
-                  name="usernameOrEmail"
                   required
-                  value={details.usernameOrEmail}
                   fullWidth
-                  error={usernameOrEmailError !== ''}
-                  helperText={
-                    usernameOrEmailError !== '' ? usernameOrEmailError : ''
-                  }
+                  name="oldPassword"
+                  value={details.oldPassword}
+                  label="Current Password"
+                  error={oldPasswordError !== ''}
+                  helperText={oldPasswordError !== '' ? oldPasswordError : ''}
                   onChange={(e) => handleChange(e)}
-                  id="username"
-                  label="Username or Email"
-                  autoFocus
+                  type="password"
+                  id="old-password"
+                  autoComplete="new-password"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -226,12 +205,29 @@ export default function loginPage() {
                   fullWidth
                   name="password"
                   value={details.password}
-                  label="Password"
+                  label="New Password"
                   error={passwordError !== ''}
                   helperText={passwordError !== '' ? passwordError : ''}
                   onChange={(e) => handleChange(e)}
                   type="password"
                   id="password"
+                  autoComplete="new-password"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="confirmPassword"
+                  value={details.confirmPassword}
+                  label="Confirm New Password"
+                  error={confirmPasswordError !== ''}
+                  helperText={
+                    confirmPasswordError !== '' ? confirmPasswordError : ''
+                  }
+                  onChange={(e) => handleChange(e)}
+                  type="password"
+                  id="confirm-password"
                   autoComplete="new-password"
                 />
               </Grid>
@@ -242,15 +238,8 @@ export default function loginPage() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Login
+              Update
             </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="/register" variant="body2">
-                  New user? Register
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
       </Container>
